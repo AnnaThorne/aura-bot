@@ -1,22 +1,31 @@
 # -------- Build stage --------
-FROM rust:1.75 AS builder
+FROM rust:slim AS builder
 
-WORKDIR /app
-COPY . /app
-RUN rustup target add x86_64-unknown-linux-musl
+WORKDIR /usr/src/aura-bot
 
+RUN apt-get update && \
+    apt-get install -y musl-tools ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Nightly toolchain
+RUN rustup target add --toolchain nightly x86_64-unknown-linux-musl
+
+# Copy Cargo files
 COPY Cargo.toml Cargo.lock ./
-RUN cargo build --release --target x86_64-unknown-linux-musl
-RUN rm -rf src
 
-COPY . .
+# Copy source
+COPY src ./src
+
+# Build release binary
 RUN cargo build --release --target x86_64-unknown-linux-musl
 
 # -------- Runtime stage --------
-FROM scratch
+FROM scratch AS runtime
 
-COPY --from=builder \
-    /app/target/x86_64-unknown-linux-musl/release/aura-bot \
-    /aura-bot
+WORKDIR /app
 
-CMD ["/aura-bot"]
+COPY --from=builder /usr/src/aura-bot/target/x86_64-unknown-linux-musl/release/aura-bot /aura-bot
+
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+
+ENTRYPOINT ["/aura-bot"]

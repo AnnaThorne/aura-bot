@@ -1,15 +1,13 @@
-use rand::seq::SliceRandom;
 use rand::Rng;
+use rand::seq::SliceRandom;
 
-/// Strongly-typed GIF categories
+/// GIF categories
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum GifCategory {
     Beam,
     Aura,
 }
 
-/// Piccolo-themed quotes and optional associated GIF category.
-/// Update these tuples to change quote text or category mapping.
 pub static QUOTE_CATEGORIES: &[(&str, Option<GifCategory>)] = &[
     ("They must be using the pull up techhnique.", None),
     ("SPECIAL BEAM!!", Some(GifCategory::Beam)),
@@ -20,13 +18,16 @@ pub static QUOTE_CATEGORIES: &[(&str, Option<GifCategory>)] = &[
         "The pull-up technique. It's a technique\nwhere you arrive late on purpose with a grand entrance.",
         None,
     ),
-    ("That guy aura farms for a living tho.",None),
+    ("That guy aura farms for a living tho.", None),
     ("There's an aura farmer close by.", None),
     (
         "The King Charles technique - It's an aura farming technique where you\nmake people bow down when you\nwalk past or by them.",
         None,
     ),
-    ("Yes, yes, just making sure you peeped the fit.", Some(GifCategory::Aura)),
+    (
+        "Yes, yes, just making sure you peeped the fit.",
+        Some(GifCategory::Aura),
+    ),
     (
         "The explosion technique. A technique\nwhereby you'd rather stand still during an\nexplosion than escape from it. I've used\nit quite a bit over the years.",
         None,
@@ -35,16 +36,28 @@ pub static QUOTE_CATEGORIES: &[(&str, Option<GifCategory>)] = &[
         "Pardon me. I find it irksome to be looked down upon by someone smaller.\nI'm sure you can appreciate my dilemma.",
         None,
     ),
-    ("This dude because of his mass, his\ngirth, his power.", None),
-    ("You seem to also be familiar with the\nsun-kissed technique.", Some(GifCategory::Aura)),
+    (
+        "This dude because of his mass, his\ngirth, his power.",
+        None,
+    ),
+    (
+        "You seem to also be familiar with the\nsun-kissed technique.",
+        Some(GifCategory::Aura),
+    ),
     ("Who decided that?", None),
     ("Ah, the pull-up technique. A classic.", None),
     ("Ain't I clean though?", Some(GifCategory::Aura)),
-    ("Yeah, I'm familiar with the\ntechnique. The nonchalant technique.", None),
+    (
+        "Yeah, I'm familiar with the\ntechnique. The nonchalant technique.",
+        None,
+    ),
     ("The game is truly back.", None),
     ("You see how they're cape farming ine explosion?", None),
     ("You all right?", None),
-    ("It's just a trick I picked up from\nancient Tibetan monks.", None),
+    (
+        "It's just a trick I picked up from\nancient Tibetan monks.",
+        None,
+    ),
     ("What? They're using my technique against me?", None),
     ("Another trick I learned from the Tibetan monks.", None),
     ("The clone technique. I should have seen this coming.", None),
@@ -52,6 +65,7 @@ pub static QUOTE_CATEGORIES: &[(&str, Option<GifCategory>)] = &[
         "This guy is legendary? Based on what?\n What has he done? How long has he been in THE GAME?",
         None,
     ),
+    ("You want the method?", None),
 ];
 
 /// Categories of GIFs - each category contains a small curated list of GIF URLs.
@@ -74,6 +88,7 @@ pub static GIF_CATEGORIES: &[(GifCategory, &[&str])] = &[
 pub static GIFS: &[&str] = &[
     "https://tenor.com/view/piccolo-dbz-dragon-ball-piccolo-standing-on-tower-tower-gif-13558229454457057953",
     "https://tenor.com/view/piccolo-piccolo-aura-piccolo-aura-farming-cape-piccolo-we-see-the-fit-gif-12978094043841215022",
+    "https://tenor.com/view/good-morning-gif-8038175681642934493",
 ];
 
 /// Choose a random quote (returns the text and optional category)
