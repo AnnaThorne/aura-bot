@@ -1,6 +1,4 @@
 use std::hash::Hash;
-use log::debug;
-use poise::serenity_prelude as serenity;
 use crate::commands::classes::Data;
 
 type Error = Box<dyn std::error::Error + Send + Sync>;
@@ -42,7 +40,7 @@ pub async fn rate(
 
 fn hasher<T: Hash>(t: &T) -> u64 {
     use std::collections::hash_map::DefaultHasher;
-    use std::hash::{Hasher, Hash};
+    use std::hash::{Hasher};
     let mut s = DefaultHasher::new();
     t.hash(&mut s);
     s.finish()
