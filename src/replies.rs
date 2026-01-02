@@ -1,5 +1,5 @@
 use rand::Rng;
-use rand::seq::SliceRandom;
+use rand::prelude::IndexedRandom;
 
 /// GIF categories
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]

@@ -1,10 +1,9 @@
+mod config;
 mod handler;
 mod replies;
-mod config;
 
-
-use serenity::prelude::*;
 use handler::Handler;
+use serenity::prelude::*;
 
 #[tokio::main]
 async fn main() {
@@ -12,7 +11,9 @@ async fn main() {
     let token = match config::bot_token_from_env() {
         Ok(t) => t,
         Err(_) => {
-            eprintln!("Error: BOT_TOKEN not set. Set the BOT_TOKEN environment variable to your Discord bot token.");
+            eprintln!(
+                "Error: BOT_TOKEN not set. Set the BOT_TOKEN environment variable to your Discord bot token."
+            );
             std::process::exit(1);
         }
     };

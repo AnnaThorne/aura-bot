@@ -1,10 +1,10 @@
-use rand::thread_rng;
 use rand::Rng;
+use rand::rng;
 use serenity::async_trait;
 use serenity::model::channel::Message;
 use serenity::prelude::*;
 
-use crate::replies::{pick_quote, pick_gif_from_category, pick_random_gif};
+use crate::replies::{pick_gif_from_category, pick_quote, pick_random_gif};
 
 pub struct Handler {
     pub chance_prob: f32,
@@ -24,11 +24,11 @@ impl EventHandler for Handler {
         if !content.starts_with('!') {
             let maybe_response = {
                 // Keep RNG usage local so the future remains Send
-                let mut rng = thread_rng();
-                let roll = rng.gen_range(0.0f32..1.0f32);
+                let mut rng = rng();
+                let roll = rng.random_range(0.0f32..1.0f32);
                 if roll < self.chance_prob {
                     // Decide whether to send a quote, a gif, or both (using a match for clarity)
-                    let pick = rng.gen_range(0..100);
+                    let pick = rng.random_range(0..100);
                     match pick {
                         0..=49 => {
                             // Quote only, include category gif if available
@@ -49,7 +49,10 @@ impl EventHandler for Handler {
                                     // fallback to a quote (with category gif if available)
                                     let (q, maybe_cat) = pick_quote(&mut rng);
                                     maybe_cat
-                                        .and_then(|cat| pick_gif_from_category(cat, &mut rng).map(|gif| format!("{}\n{}", q, gif)))
+                                        .and_then(|cat| {
+                                            pick_gif_from_category(cat, &mut rng)
+                                                .map(|gif| format!("{}\n{}", q, gif))
+                                        })
                                         .or(Some(q.to_string()))
                                 })
                         }
@@ -59,10 +62,14 @@ impl EventHandler for Handler {
                             if let Some(cat) = maybe_cat {
                                 pick_gif_from_category(cat, &mut rng)
                                     .map(|g| format!("{}\n{}", q, g))
-                                    .or_else(|| pick_random_gif(&mut rng).map(|g| format!("{}\n{}", q, g)))
+                                    .or_else(|| {
+                                        pick_random_gif(&mut rng).map(|g| format!("{}\n{}", q, g))
+                                    })
                                     .or(Some(q.to_string()))
                             } else {
-                                pick_random_gif(&mut rng).map(|g| format!("{}\n{}", q, g)).or(Some(q.to_string()))
+                                pick_random_gif(&mut rng)
+                                    .map(|g| format!("{}\n{}", q, g))
+                                    .or(Some(q.to_string()))
                             }
                         }
                     }
@@ -91,7 +98,7 @@ impl EventHandler for Handler {
             }
             "!piccolo" | "!aura" => {
                 let (quote, gif) = {
-                    let mut rng = thread_rng();
+                    let mut rng = rng();
                     let (q, maybe_cat) = pick_quote(&mut rng);
                     let g = maybe_cat
                         .and_then(|cat| pick_gif_from_category(cat, &mut rng))
@@ -100,7 +107,11 @@ impl EventHandler for Handler {
                     (q.to_string(), g)
                 };
 
-                let text = if gif.is_empty() { quote } else { format!("{}\n{}", quote, gif) };
+                let text = if gif.is_empty() {
+                    quote
+                } else {
+                    format!("{}\n{}", quote, gif)
+                };
                 if let Err(why) = msg.channel_id.say(&ctx.http, text).await {
                     println!("Error sending message: {why:?}");
                 }
