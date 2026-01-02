@@ -14,16 +14,6 @@ use commands::classes::Data;
 use handler::Handler;
 use serenity::prelude::*;
 
-const FAILED_CODEBLOCK: &str = "\
-Missing code block. Please use the following markdown:
-`` `code here` ``
-or
-```ansi
-`\x1b[0m`\x1b[0m`rust
-code here
-`\x1b[0m`\x1b[0m`
-```";
-
 #[tokio::main]
 async fn main() {
     // Login with a bot token from the environment
@@ -69,28 +59,6 @@ async fn main() {
             on_error: |error| {
                 Box::pin(async move {
                     warn!("Encountered error: {:?}", error);
-                    if let poise::FrameworkError::ArgumentParse { error, ctx, .. } = error {
-                        let response = if error.is::<poise::CodeBlockError>() {
-                            FAILED_CODEBLOCK.to_owned()
-                        } else if let Some(multiline_help) = &ctx.command().help_text {
-                            format!("**{error}**\n{multiline_help}")
-                        } else {
-                            error.to_string()
-                        };
-
-                        if let Err(e) = ctx.say(response).await {
-                            warn!("{}", e);
-                        }
-                    } else if let poise::FrameworkError::Command { ctx, error, .. } = error {
-                        if error.is::<poise::CodeBlockError>()
-                            && let Err(e) = ctx.say(FAILED_CODEBLOCK.to_owned()).await
-                        {
-                            warn!("{}", e);
-                        }
-                        if let Err(e) = ctx.say(error.to_string()).await {
-                            warn!("{}", e);
-                        }
-                    }
                 })
             },
             ..Default::default()
