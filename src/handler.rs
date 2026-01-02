@@ -30,7 +30,7 @@ impl EventHandler for Handler {
                     // Decide whether to send a quote, a gif, or both (using a match for clarity)
                     let pick = rng.random_range(0..100);
                     match pick {
-                        0..=49 => {
+                        0..=84 => {
                             // Quote only, include category gif if available
                             let (q, maybe_cat) = pick_quote(&mut rng);
                             if let Some(cat) = maybe_cat {
@@ -40,21 +40,6 @@ impl EventHandler for Handler {
                             } else {
                                 Some(q.to_string())
                             }
-                        }
-                        50..=84 => {
-                            // GIF only
-                            pick_random_gif(&mut rng)
-                                .map(|g| format!("Piccolo sends a gif: {}", g))
-                                .or_else(|| {
-                                    // fallback to a quote (with category gif if available)
-                                    let (q, maybe_cat) = pick_quote(&mut rng);
-                                    maybe_cat
-                                        .and_then(|cat| {
-                                            pick_gif_from_category(cat, &mut rng)
-                                                .map(|gif| format!("{}\n{}", q, gif))
-                                        })
-                                        .or(Some(q.to_string()))
-                                })
                         }
                         _ => {
                             // Both - prefer category gif for the chosen quote
