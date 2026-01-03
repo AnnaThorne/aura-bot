@@ -7,6 +7,9 @@ edition = "2024"
 serenity = "0.12"
 tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
 rand = "0.9.2"
+poise = "0.6.1"
+log = "0.4.29"
+anyhow = "1.0.100"
 [[bin]]
 name = "aura-bot"
 path = "src/main.rs"
