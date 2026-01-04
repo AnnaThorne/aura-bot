@@ -17,7 +17,7 @@ async fn main() {
     let token = match config::bot_token_from_env() {
         Ok(t) => t,
         Err(_) => {
-            eprintln!(
+            error!(
                 "Error: BOT_TOKEN not set. Set the BOT_TOKEN environment variable to your Discord bot token."
             );
             std::process::exit(1);
@@ -69,6 +69,6 @@ async fn main() {
 
     // Start listening for events by starting a single shard
     if let Err(why) = client.start().await {
-        println!("Client error: {why:?}");
+        error!("Client error: {why:?}");
     }
 }
