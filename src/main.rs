@@ -12,7 +12,7 @@ use handler::event_handler;
 use log::error;
 use log::info;
 use model::data::Data;
-use poise::serenity_prelude::GuildId;
+// use poise::serenity_prelude::GuildId;
 use serenity::prelude::*;
 
 #[tokio::main]
