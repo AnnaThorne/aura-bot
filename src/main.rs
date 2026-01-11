@@ -7,10 +7,12 @@ mod types;
 pub use types::{Context, Error};
 
 use commands::aura;
+use commands::help;
 use handler::event_handler;
 use log::error;
 use log::info;
 use model::data::Data;
+use poise::serenity_prelude::GuildId;
 use serenity::prelude::*;
 
 #[tokio::main]
@@ -19,13 +21,15 @@ async fn main() {
     let config = config::Config::from_env();
     let token = config.token.clone();
     // Set gateway intents, which decides what events the bot will be notified about
-    let intents = GatewayIntents::GUILD_MESSAGES
-        | GatewayIntents::DIRECT_MESSAGES
-        | GatewayIntents::MESSAGE_CONTENT;
+    let intents = //GatewayIntents::GUILD_MESSAGES
+    //     | GatewayIntents::DIRECT_MESSAGES
+    //     // | GatewayIntents::MESSAGE_CONTENT
+    //     | GatewayIntents::GUILDS
+    GatewayIntents::non_privileged();
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            commands: vec![aura::aura()],
+            commands: vec![aura::aura(), help::help()],
             pre_command: |ctx| {
                 Box::pin(async move {
                     info!(
@@ -47,6 +51,12 @@ async fn main() {
         })
         .setup(|ctx, ready, framework| {
             Box::pin(async move {
+                // poise::builtins::register_in_guild(
+                //     ctx,
+                //     &framework.options().commands,
+                //     GuildId::new(config.guild_id),
+                // )
+                // .await?;
                 poise::builtins::register_globally(ctx, &framework.options().commands).await?;
                 info!("{} connected!", ready.user.name);
                 let config = config.clone();
