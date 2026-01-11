@@ -3,9 +3,11 @@ mod config;
 mod handler;
 mod model;
 mod replies;
+mod types;
+pub use types::{Context, Error};
 
 use commands::aura;
-use handler::Handler;
+use handler::event_handler;
 use log::error;
 use log::info;
 use model::data::Data;
@@ -14,19 +16,8 @@ use serenity::prelude::*;
 #[tokio::main]
 async fn main() {
     // Login with a bot token from the environment
-    let token = match config::bot_token_from_env() {
-        Ok(t) => t,
-        Err(_) => {
-            error!(
-                "Error: BOT_TOKEN not set. Set the BOT_TOKEN environment variable to your Discord bot token."
-            );
-            std::process::exit(1);
-        }
-    };
-
-    // Read chance probability from MESSAGE_CHANCE (0.0-1.0). Defaults to 0.03 (3%).
-    let chance_prob = config::message_chance_from_env();
-
+    let config = config::Config::from_env();
+    let token = config.token.clone();
     // Set gateway intents, which decides what events the bot will be notified about
     let intents = GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES
@@ -49,21 +40,24 @@ async fn main() {
                     error!("Error running command: {:?}", error);
                 })
             },
+            event_handler: |ctx, event, framework, data| {
+                Box::pin(event_handler(ctx, event, framework, data))
+            },
             ..Default::default()
         })
         .setup(|ctx, ready, framework| {
             Box::pin(async move {
                 poise::builtins::register_globally(ctx, &framework.options().commands).await?;
                 info!("{} connected!", ready.user.name);
-                Ok(Data {})
+                let config = config.clone();
+                Ok(Data { config })
             })
         })
         .build();
 
     // Create a new instance of the Client, logging in as a bot.
-    let mut client = Client::builder(&token, intents)
+    let mut client = Client::builder(token, intents)
         .framework(framework)
-        .event_handler(Handler { chance_prob })
         .await
         .expect("Err creating client");
 
