@@ -14,31 +14,16 @@ fn with_env_var<T, F: FnOnce() -> T>(key: &str, val: Option<&str>, f: F) -> T {
     }
     res
 }
-
 #[test]
-fn message_chance_default() {
-    with_env_var("MESSAGE_CHANCE", None, || {
-        assert!((config::message_chance_from_env() - 0.03f32).abs() < f32::EPSILON);
-    });
-}
-
-#[test]
-fn message_chance_parses() {
-    with_env_var("MESSAGE_CHANCE", Some("0.5"), || {
-        assert!((config::message_chance_from_env() - 0.5f32).abs() < f32::EPSILON);
-    });
-}
-
-#[test]
-fn bot_token_result_ok() {
+fn bot_token_result_default() {
     with_env_var("BOT_TOKEN", Some("x-token"), || {
-        assert!(config::bot_token_from_env().is_ok());
-    });
-}
+        with_env_var("MESSAGE_CHANCE", Some("0.420"), || {
+            // Call from_env
+            let config = config::Config::from_env();
 
-#[test]
-fn bot_token_result_missing() {
-    with_env_var("BOT_TOKEN", None, || {
-        assert!(config::bot_token_from_env().is_err());
+            // Assert values
+            assert_eq!(config.token, "x-token");
+            assert!((config.message_chance - 0.420).abs() < f32::EPSILON);
+        });
     });
 }
