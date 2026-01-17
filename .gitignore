@@ -28,4 +28,4 @@ target
 .env
 
 .github/*
-!.github/*.yml
+!.github/**.yml
