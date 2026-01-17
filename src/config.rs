@@ -5,7 +5,7 @@ fn message_chance_from_env() -> f32 {
     env::var("MESSAGE_CHANCE")
         .ok()
         .and_then(|s| s.parse::<f32>().ok())
-        .filter(|&v| v >= 0.0 && v <= 1.0)
+        .filter(|&v| (0.0..=1.0).contains(&v))
         .unwrap_or(0.03f32)
 }
 
