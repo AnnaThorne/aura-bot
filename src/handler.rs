@@ -1,8 +1,8 @@
 use crate::model::data::Data;
 use crate::replies::{pick_gif_from_category, pick_quote, pick_random_gif};
 use ::serenity::all::Mentionable;
-use log::debug;
 use log::error;
+use log::{debug, info};
 use rand::Rng;
 use rand::rng;
 
@@ -17,11 +17,11 @@ pub async fn event_handler(
     _framework: poise::FrameworkContext<'_, Data, Error>,
     data: &Data,
 ) -> Result<(), Error> {
-    println!("EVENT: {}", &event.snake_case_name());
+    info!("EVENT: {}", &event.snake_case_name());
     match event {
         serenity::FullEvent::Ready { data_about_bot, .. } => {
-            println!("Logged in as {}", data_about_bot.user.name);
-            set_bot_presence(&ctx);
+            info!("Logged in as {}", data_about_bot.user.name);
+            set_bot_presence(ctx);
         }
         serenity::FullEvent::Message { new_message } => {
             // Ignore bot messages
@@ -74,17 +74,17 @@ pub async fn event_handler(
                     }
                 };
 
-                if let Some(text) = maybe_response {
-                    if !text.trim().is_empty() {
-                        // TODO: change this to reply?
-                        // if let Err(why) = new_message.reply(&ctx.http, text).await {
-                        if let Err(why) = new_message.channel_id.say(&ctx.http, text).await {
-                            println!("Error sending random message: {why:?}");
-                            // TODO: maybe we actually return the error at some point
-                        }
-                        // don't also process this message as a command
-                        return Ok(());
+                if let Some(text) = maybe_response
+                    && !text.trim().is_empty()
+                {
+                    // TODO: change this to reply?
+                    // if let Err(why) = new_message.reply(&ctx.http, text).await {
+                    if let Err(why) = new_message.channel_id.say(&ctx.http, text).await {
+                        error!("Error sending random message: {why:?}");
+                        // TODO: maybe we actually return the error at some point
                     }
+                    // don't also process this message as a command
+                    return Ok(());
                 }
             }
 
