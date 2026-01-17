@@ -17,11 +17,19 @@ fn bot_token_from_env() -> Result<String, env::VarError> {
 fn guild_id_from_env() -> Result<String, env::VarError> {
     env::var("GUILD_ID")
 }
+
+fn announcement_channel_id_from_env() -> u64 {
+    env::var("ANNOUNCEMENT_CHANNEL_ID")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(0)
+}
 #[derive(Debug, Clone)]
 pub struct Config {
     pub token: String,
     pub message_chance: f32,
     pub guild_id: u64,
+    pub announcement_channel_id: u64,
 }
 
 impl Config {
@@ -33,6 +41,18 @@ impl Config {
                 .expect("GUILD_ID must be set in the environment")
                 .parse()
                 .expect("GUILD_ID must be a valid u64"),
+            announcement_channel_id: announcement_channel_id_from_env(),
+        }
+    }
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            token: "".to_string(),
+            message_chance: 0.03f32,
+            guild_id: 0,
+            announcement_channel_id: 0,
         }
     }
 }

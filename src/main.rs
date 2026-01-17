@@ -60,7 +60,10 @@ async fn main() {
                 poise::builtins::register_globally(ctx, &framework.options().commands).await?;
                 info!("{} connected!", ready.user.name);
                 let config = config.clone();
-                Ok(Data { config })
+                Ok(Data {
+                    config,
+                    ..Default::default()
+                })
             })
         })
         .build();
