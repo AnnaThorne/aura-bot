@@ -1,9 +1,20 @@
 # aura-bot
 
 [![ci](https://github.com/AnnaThorne/aura-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/AnnaThorne/aura-bot/actions/workflows/ci.yml)  
-Aura farming discords bot written in Rust
+Aura farming discord bot written in Rust.
 
-TODO:
-
-- if piccolo detects Valorant player, call them out
-- try Diesel for DB connection
+## How to run
+Create a compose file:
+```
+services:
+  aura-bot:
+    image: ghcr.io/annathorne/aura-bot:main
+    restart: unless-stopped
+    env_file:
+      - .env
+```
+Create a .env file with the values as seen in .env.sample.  
+Run
+```
+docker compose up
+```
